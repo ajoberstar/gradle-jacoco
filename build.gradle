@@ -1,0 +1,23 @@
+apply plugin: 'groovy'
+apply plugin: 'eclipse'
+
+repositories { mavenCentral() }
+
+configurations {
+	provided
+}
+
+sourceSets {
+	main {
+		compileClasspath += configurations.provided
+		// runtimeClasspath += configurations.provided
+	}
+}
+
+dependencies {
+	compile gradleApi()
+	provided 'org.jacoco:org.jacoco.core:0.6.1.201212231917'
+	// provided 'org.jacoco:org.jacoco.agent:0.6.1.201212231917'
+	// provided 'org.jacoco:org.jacoco.ant:0.6.1.201212231917'
+	// provided 'org.jacoco:org.jacoco.report:0.6.1.201212231917'
+}
