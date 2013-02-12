@@ -1,7 +1,10 @@
 apply plugin: 'groovy'
 apply plugin: 'eclipse'
+apply plugin: 'maven'
+apply plugin: 'signing'
 
 group = 'org.ajoberstar'
+description = 'Jacoco plugin for Gradle.'
 version = '0.1.0-SNAPSHOT'
 
 repositories { mavenCentral() }
@@ -9,4 +12,72 @@ repositories { mavenCentral() }
 dependencies {
 	compile gradleApi()
 	testCompile 'org.spockframework:spock-core:0.7-groovy-1.8'
+	testCompile 'cglib:cglib-nodep:2.2.2'
+}
+
+test {
+	systemProperty 'java.io.tmpdir', temporaryDir
+}
+
+task sourcesJar(type:Jar) {
+	classifier = 'sources'
+	from sourceSets.main.allSource
+}
+
+task javadocJar(type:Jar) {
+	classifier = 'javadoc'
+	from javadoc.outputs.files
+}
+
+task groovydocJar(type:Jar) {
+	classifier = 'groovydoc'
+	from groovydoc.outputs.files
+}
+
+artifacts {
+	archives sourcesJar
+	archives javadocJar
+	archives groovydocJar
+}
+
+signing {
+	sign configurations.archives
+}
+
+uploadArchives {
+	repositories.mavenDeployer {
+		name = 'Sonatype OSS'
+		repository(url:'https://oss.sonatype.org/service/local/staging/deploy/maven2') {
+			authentication(userName:sonatypeUserName, password:sonatypePassword)
+		}
+		snapshotRepository(url:'https://oss.sonatype.org/content/repositories/snapshots') {
+			authentication(userName:sonatypeUserName, password:sonatypePassword)
+		}
+
+		beforeDeployment { signing.signPom it }
+
+		pom.project {
+			name project.name
+			description project.description
+			url 'http://github.com/ajoberstar/gradle-jacoco'
+			licenses {
+				license {
+					name 'The Apache Software License, Version 2.0'
+					url 'http://www.apache.org/licenses/LICENSE-2.0'
+				}
+			}
+			developers {
+				developer {
+					id 'ajoberstar'
+					name 'Andrew Oberstar'
+					email 'andrew@ajoberstar.org'
+				}
+			}
+			scm {
+				connection 'git://github.com/ajoberstar/gradle-git.git'
+				developerConnection 'git@github.com:ajoberstar/gradle-git.git'
+				url 'http://github.com/ajoberstar/gradle-git'
+			}
+		}
+	}
 }
