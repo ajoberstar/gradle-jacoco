@@ -1,6 +1,12 @@
 package org.ajoberstar.gradle.jacoco.tasks
 
+import org.gradle.api.Project
+import org.gradle.api.file.FileCollection
+
 class JacocoTaskExtension {
+	private final Project project
+	private final FileCollection agentConf
+
 	boolean enabled = true
 
 	Object destPath
@@ -16,12 +22,17 @@ class JacocoTaskExtension {
 	Object classDumpPath
 	boolean jmx = false
 
+	JacocoTaskExtension(Project project, FileCollection agentConf) {
+		this.project = project
+		this.agentConf = agentConf
+	}
+
 	File getDestFile() {
-		return null
+		destPath?.with { project.file(it) }
 	}
 
 	File getClassDumpDir() {
-		return null
+		classDumpPath?.with { project.file(it) }
 	}
 
 	String getAsJvmArg() {
@@ -34,6 +45,8 @@ class JacocoTaskExtension {
 				builder << '='
 				if (value instanceof Collection) {
 					builder << value.join(':')
+				} else if (value instanceof File) {
+					builder << value.canonicalPath
 				} else {
 					builder << value
 				}
@@ -42,7 +55,7 @@ class JacocoTaskExtension {
 		}
 
 		builder << '-javaagent:'
-		//builder << agentJarPath
+		builder << agentConf.singleFile.canonicalPath
 		builder << '='
 		arg 'destfile', getDestFile()
 		arg 'append', getAppend()

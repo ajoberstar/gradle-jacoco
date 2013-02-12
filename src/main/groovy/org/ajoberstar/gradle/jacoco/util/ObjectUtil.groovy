@@ -1,5 +1,7 @@
 package org.ajoberstar.gradle.jacoco.util
 
+import java.util.concurrent.Callable
+
 class ObjectUtil {
 	static Object unpack(Object obj) {
 		if (obj instanceof Callable) {
