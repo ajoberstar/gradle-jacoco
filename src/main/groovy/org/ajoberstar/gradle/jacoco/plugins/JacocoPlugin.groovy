@@ -3,6 +3,7 @@ package org.ajoberstar.gradle.jacoco.plugins
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.tasks.testing.Test
+import org.gradle.api.plugins.sonar.SonarPlugin
 import org.ajoberstar.gradle.jacoco.JacocoAgentJar
 import org.ajoberstar.gradle.jacoco.tasks.JacocoBase
 
@@ -18,6 +19,7 @@ class JacocoPlugin implements Plugin<Project> {
 		configureDefaultDependencies(project, extension)
 		configureTaskClasspaths(project)
 		applyToDefaultTasks(project, extension)
+		configureSonarPlugin(project)
 	}
 
 	private void configureJacocoConfigurations(Project project) {
@@ -48,5 +50,21 @@ class JacocoPlugin implements Plugin<Project> {
 
 	private void applyToDefaultTasks(Project project, JacocoPluginExtension extension) {
 		extension.applyTo(project.tasks.withType(Test))
+	}
+
+	private void configureSonarPlugin(Project currentProject) {
+		currentProject.rootProject.plugins.withType(SonarPlugin) {
+			currentProject.sonar.project.withProjectProperties { props ->
+				if (currentProject.tasks.findByPath('test') instanceof Test) {
+					props['sonar.jacoco.reportPath'] = currentProject.tasks.test.jacoco.destFile
+				}
+				if (currentProject.tasks.findByPath('intTest') instanceof Test) {
+					props['sonar.jacoco.reportPath'] = currentProject.tasks.intTest.jacoco.destFile
+				}
+				if (currentProject.tasks.findByPath('integTest') instanceof Test) {
+					props['sonar.jacoco.itReportPath'] = currentProject.tasks.integTest.jacoco.destFile
+				}
+			}
+		}
 	}
 }
