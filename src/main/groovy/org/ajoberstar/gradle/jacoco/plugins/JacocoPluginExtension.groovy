@@ -10,7 +10,7 @@ import org.ajoberstar.gradle.jacoco.tasks.JacocoTaskExtension
 @Slf4j
 class JacocoPluginExtension {
 	static final String TASK_EXTENSION_NAME = 'jacoco'
-	String toolVersion = '0.6.1.201212231917'
+	String toolVersion = '0.6.2.201302030002'
 
 	protected final Project project
 	private final JacocoAgentJar agent
