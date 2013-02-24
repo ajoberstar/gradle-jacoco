@@ -1,7 +1,13 @@
+buildscript {
+	repositories { mavenCentral() }
+	dependencies { classpath 'org.ajoberstar:gradle-git:0.3.0' }
+}
+
 apply plugin: 'groovy'
 apply plugin: 'eclipse'
 apply plugin: 'maven'
 apply plugin: 'signing'
+apply plugin: 'github-pages'
 
 group = 'org.ajoberstar'
 description = 'Jacoco plugin for Gradle.'
@@ -78,6 +84,18 @@ uploadArchives {
 				developerConnection 'git@github.com:ajoberstar/gradle-git.git'
 				url 'http://github.com/ajoberstar/gradle-git'
 			}
+		}
+	}
+}
+
+githubPages {
+	repoUri = 'git@github.com:ajoberstar/gradle-jacoco.git'
+	pages {
+		from(javadoc.outputs.files) {
+			into 'docs/javadoc'
+		}
+		from(groovydoc.outputs.files) {
+			into 'docs/groovydoc'
 		}
 	}
 }
