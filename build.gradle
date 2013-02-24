@@ -91,6 +91,7 @@ uploadArchives {
 githubPages {
 	repoUri = 'git@github.com:ajoberstar/gradle-jacoco.git'
 	pages {
+		from 'src/gh-pages'
 		from(javadoc.outputs.files) {
 			into 'docs/javadoc'
 		}
