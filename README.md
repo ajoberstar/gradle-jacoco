@@ -1,6 +1,6 @@
 # gradle-jacoco
 
-A plugin for adding Jacoco support to the Gradle build tool.
+A plugin for adding [Jacoco](http://www.eclemma.org/jacoco/trunk/index.html) support to the Gradle build tool.
 
 **API Documentation**
 
@@ -24,15 +24,15 @@ apply plugin: 'jacoco'
 ## Default Behavior
 
 When the plugin is applied, it will add an extension to the project
-providing options for configuraing the version of Jacoco to use, as well
-as apply the Jacoco agent to tasks.
+providing options for configuring the version of Jacoco to use, as well
+as applying the Jacoco agent to tasks.
 
 By default, all `Test` tasks will have Jacoco support turned on.
 
 If you use the `sonar` plugin, the `jacoco` plugin will automatically
 set the unit test and integration test report paths for the project. It
 will assume that unit test data should come from the `test` task and that
-integration test data, if any, will come from the `intTest` or `integTest`
+integration test data, if any, will come from an `intTest` or `integTest`
 task.
 
 Any tasks that have Jacoco applied will have their own extension that allows
@@ -45,7 +45,7 @@ on the project to do high-level configuration and apply Jacoco to additional tas
 
 ```groovy
 jacoco {
-	//change the version of Jacoco in use
+	// change the version of Jacoco in use
 	toolVersion = '0.6.2.201302030002'
 
 	// apply to a specific task that implements JavaForkOptions
@@ -76,7 +76,7 @@ test {
 ```
 ## Merging Execution Data
 
-If you need to have a single execution file, which is not required for report generation, you
+If you need to have a single execution file (which is not required for report generation) you
 can use the [JacocoMerge](http://ajoberstar.org/gradle-jacoco/docs/groovydoc/org/ajoberstar/gradle/jacoco/tasks/JacocoMerge.html)
 task.
 
@@ -84,6 +84,7 @@ task.
 import org.ajoberstar.gradle.jacoco.tasks.*
 
 task mergedData(type: JacocoMerge) {
+	dependsOn test, integTest
 	executionData = files(test.jacoco.destFile, integTest.jacoco.destFile)
 }
 ```
