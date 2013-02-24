@@ -7,11 +7,18 @@ import org.gradle.api.plugins.sonar.SonarPlugin
 import org.ajoberstar.gradle.jacoco.JacocoAgentJar
 import org.ajoberstar.gradle.jacoco.tasks.JacocoBase
 
+/**
+ * Plugin that provides support for generating Jacoco coverage data.
+ */
 class JacocoPlugin implements Plugin<Project> {
 	static final String AGENT_CONFIGURATION_NAME = 'jacocoAgent'
 	static final String ANT_CONFIGURATION_NAME = 'jacocoAnt'
 	static final String PLUGIN_EXTENSION_NAME = 'jacoco'
 
+	/**
+	 * Applies the plugin to the given project.
+	 * @param project the project to apply to
+	 */
 	void apply(Project project) {
 		configureJacocoConfigurations(project)
 		JacocoAgentJar agent = new JacocoAgentJar(project, project.configurations[AGENT_CONFIGURATION_NAME])
@@ -22,6 +29,10 @@ class JacocoPlugin implements Plugin<Project> {
 		configureSonarPlugin(project)
 	}
 
+	/**
+	 * Creates the configurations used by plugin.
+	 * @param project the project to add the configurations to
+	 */
 	private void configureJacocoConfigurations(Project project) {
 		project.configurations.add(AGENT_CONFIGURATION_NAME).with {
 			visible = false
@@ -35,6 +46,11 @@ class JacocoPlugin implements Plugin<Project> {
 		}
 	}
 
+	/**
+	 * Configures the default dependencies used in the plugin's configurations.
+	 * @param project the project to add the dependencies to
+	 * @param extension the extension that has the tool version to use
+	 */
 	private void configureDefaultDependencies(Project project, JacocoPluginExtension extension) {
 		project.dependencies {
 			jacocoAgent "org.jacoco:org.jacoco.agent:${extension.toolVersion}"
@@ -42,16 +58,32 @@ class JacocoPlugin implements Plugin<Project> {
 		}
 	}
 
+	/**
+	 * Configures the classpath for Jacoco tasks.
+	 * @param project the project to configure tasks for
+	 */
 	private void configureTaskClasspaths(Project project) {
 		project.tasks.withType(JacocoBase) {
 			jacocoClasspath = project.configurations[ANT_CONFIGURATION_NAME]
 		}
 	}
 
+	/**
+	 * Applies the Jacoco agent to all tasks of type {@code Test}.
+	 * @param project the project with the tasks to configure
+	 * @param extension the extension to apply Jacoco with
+	 */
 	private void applyToDefaultTasks(Project project, JacocoPluginExtension extension) {
 		extension.applyTo(project.tasks.withType(Test))
 	}
 
+	/**
+	 * Configures default paths to Jacoco execution data for unit and
+	 * integration tests. Only configures them if tasks of the default
+	 * names exist. This is {@code test} for unit tests and either
+	 * {@code integTest} or {@code intTest} for integration tests.
+	 * @param currentProject the project to configure Sonar for
+	 */
 	private void configureSonarPlugin(Project currentProject) {
 		currentProject.rootProject.plugins.withType(SonarPlugin) {
 			currentProject.sonar.project.withProjectProperties { props ->

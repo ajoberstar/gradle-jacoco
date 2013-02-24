@@ -5,10 +5,19 @@ import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
 
+/**
+ * Task to merge multiple execution data files into one.
+ */
 class JacocoMerge extends JacocoBase {
+	/**
+	 * Collection of execution data files to merge.
+	 */
 	@InputFiles
 	FileCollection executionData
 
+	/**
+	 * Path to write merged execution data to. Defaults to {@code build/jacoco/<task name>.exec}
+	 */
 	Object destPath = "${getProject().getBuildDir()}/jacoco/${getName()}.exec"
 
 	@TaskAction
@@ -19,6 +28,9 @@ class JacocoMerge extends JacocoBase {
 		}
 	}
 
+	/**
+	 * Path to write merged execution daat to.
+	 */
 	@OutputFile
 	File getDestFile() {
 		return getProject().file(destPath)
