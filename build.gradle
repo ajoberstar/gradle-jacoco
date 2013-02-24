@@ -13,6 +13,8 @@ group = 'org.ajoberstar'
 description = 'Jacoco plugin for Gradle.'
 version = '0.1.0'
 
+sourceCompatibility = '1.5'
+
 repositories { mavenCentral() }
 
 dependencies {
