@@ -1,0 +1,4 @@
+org.ajoberstar.gradle.jacoco
+org.ajoberstar.gradle.jacoco.plugins
+org.ajoberstar.gradle.jacoco.tasks
+org.ajoberstar.gradle.jacoco.util
