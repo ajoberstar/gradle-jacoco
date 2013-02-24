@@ -4,7 +4,6 @@ A plugin for adding Jacoco support to the Gradle build tool.
 
 **API Documentation**
 
-* [Javadoc](http://ajoberstar.org/gradle-jacoco/docs/javadoc)
 * [Groovydoc](http://ajoberstar.org/gradle-jacoco/docs/groovydoc)
 
 ---
@@ -41,8 +40,9 @@ configuration of specific Jacoco options.
 
 ## Configuring the Plugin
 
-You can use the `jacoco` [extension]() on the project to do high-level configuration
-and apply Jacoco to additional tasks.
+You can use the `jacoco` [extension](http://ajoberstar.org/gradle-jacoco/docs/
+groovydoc/org/ajoberstar/gradle/jacoco/plugins/JacocoPluginExtension.html) on
+the project to do high-level configuration and apply Jacoco to additional tasks.
 
 ```groovy
 jacoco {
@@ -60,7 +60,8 @@ jacoco {
 
 ## Configuring Tasks Using Jacoco
 
-Any tasks that has Jacoco applied to it will have a `jacoco` [extension]() that
+Any tasks that has Jacoco applied to it will have a `jacoco` [extension](http://ajoberstar.org/
+gradle-jacoco/docs/groovydoc/org/ajoberstar/gradle/jacoco/tasks/JacocoTaskExtension.html) that
 provides access to all of the properties passed into the agent. The extension can
 also be used to disable Jacoco on the specific task.
 
@@ -78,7 +79,8 @@ test {
 ## Merging Execution Data
 
 If you need to have a single execution file, which is not required for report generation, you
-can use the [JacocoMerge]() task.
+can use the [JacocoMerge](http://ajoberstar.org/gradle-jacoco/docs/groovydoc/org/ajoberstar/
+gradle/jacoco/tasks/JacocoMerge.html) task.
 
 ```groovy
 import org.ajoberstar.gradle.jacoco.tasks.*
@@ -90,7 +92,8 @@ task mergedData(type: JacocoMerge) {
 
 ## Creating HTML Reports
 
-If you want an HTML report of your coverage, you can use the [JacocoReport]() task.
+If you want an HTML report of your coverage, you can use the [JacocoReport](http://ajoberstar.org/
+gradle-jacoco/docs/groovydoc/org/ajoberstar/gradle/jacoco/tasks/JacocoReport.html) task.
 
 ```groovy
 import org.ajoberstar.gradle.jacoco.tasks.*
