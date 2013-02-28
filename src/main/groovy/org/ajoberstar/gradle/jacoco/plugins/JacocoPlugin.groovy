@@ -20,6 +20,7 @@ import org.gradle.api.tasks.testing.Test
 import org.gradle.api.plugins.sonar.SonarPlugin
 import org.ajoberstar.gradle.jacoco.JacocoAgentJar
 import org.ajoberstar.gradle.jacoco.tasks.JacocoBase
+import org.ajoberstar.gradle.jacoco.tasks.JacocoReport
 
 /**
  * Plugin that provides support for generating Jacoco coverage data.
@@ -40,6 +41,7 @@ class JacocoPlugin implements Plugin<Project> {
 		configureDefaultDependencies(project, extension)
 		configureTaskClasspaths(project)
 		applyToDefaultTasks(project, extension)
+		addDefaultReportTasks(project)
 		configureSonarPlugin(project)
 	}
 
@@ -89,6 +91,20 @@ class JacocoPlugin implements Plugin<Project> {
 	 */
 	private void applyToDefaultTasks(Project project, JacocoPluginExtension extension) {
 		extension.applyTo(project.tasks.withType(Test))
+	}
+
+	/**
+	 * Adds report tasks for specific default test tasks.
+	 * @param project the project to add default tasks to
+	 */
+	private void addDefaultReportTasks(Project project) {
+		['test', 'intTest', 'integTest'].each { taskName ->
+			if (project.tasks.findByPath(taskName) instanceof Test) {
+				JacocoReport reportTask = project.tasks.add("jacoco${taskName.capitalize()}Report", JacocoReport)
+				reportTask.executionData project.tasks.findByPath(taskName)
+				reportTask.sourceSets project.sourceSets.main
+			}
+		}
 	}
 
 	/**
