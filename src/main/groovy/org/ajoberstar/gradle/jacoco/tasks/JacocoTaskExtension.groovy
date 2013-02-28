@@ -22,7 +22,7 @@ import org.ajoberstar.gradle.jacoco.JacocoAgentJar
  * to generate coverage execution data.
  */
 class JacocoTaskExtension {
-	private final Project project
+	protected final Project project
 	private final JacocoAgentJar agent
 
 	/**
