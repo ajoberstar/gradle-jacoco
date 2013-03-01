@@ -18,6 +18,7 @@ import org.codehaus.groovy.runtime.typehandling.GroovyCastException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.tasks.testing.Test
+import org.gradle.api.plugins.JavaPlugin
 import org.gradle.api.plugins.sonar.SonarPlugin
 import org.ajoberstar.gradle.jacoco.JacocoAgentJar
 import org.ajoberstar.gradle.jacoco.tasks.JacocoBase
@@ -99,11 +100,13 @@ class JacocoPlugin implements Plugin<Project> {
 	 * @param project the project to add default tasks to
 	 */
 	private void addDefaultReportTasks(Project project) {
-		['test', 'intTest', 'integTest'].each { taskName ->
-			if (project.tasks.findByPath(taskName) instanceof Test) {
-				JacocoReport reportTask = project.tasks.add("jacoco${taskName.capitalize()}Report", JacocoReport)
-				reportTask.executionData project.tasks.findByPath(taskName)
-				reportTask.sourceSets project.sourceSets.main
+		project.plugins.withType(JavaPlugin) {
+			project.tasks.withType(Test) { task ->
+				if (task.name in ['test', 'intTest', 'integTest']) {
+					JacocoReport reportTask = project.tasks.add("jacoco${task.name.capitalize()}Report", JacocoReport)
+					reportTask.executionData task
+					reportTask.sourceSets project.sourceSets.main
+				}
 			}
 		}
 	}
