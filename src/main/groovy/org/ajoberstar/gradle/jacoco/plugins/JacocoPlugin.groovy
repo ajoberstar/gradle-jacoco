@@ -14,6 +14,7 @@
  */
 package org.ajoberstar.gradle.jacoco.plugins
 
+import org.codehaus.groovy.runtime.typehandling.GroovyCastException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.tasks.testing.Test
@@ -115,16 +116,30 @@ class JacocoPlugin implements Plugin<Project> {
 	 * @param currentProject the project to configure Sonar for
 	 */
 	private void configureSonarPlugin(Project currentProject) {
-		currentProject.rootProject.plugins.withType(SonarPlugin) {
-			currentProject.sonar.project.withProjectProperties { props ->
-				if (currentProject.tasks.findByPath('test') instanceof Test) {
-					props['sonar.jacoco.reportPath'] = currentProject.tasks.test.jacoco.destFile
+		def configureTasks = { propertySetter ->
+			currentProject.tasks.all { task ->
+				if (task instanceof Test) {
+					if (task.name in ['test']) {
+						propertySetter('sonar.jacoco.reportPath', task.jacoco.destFile)
+					} else if (task.name in ['intTest', 'integTest']) {
+						propertySetter('sonar.jacoco.itReportPath', task.jacoco.destFile)
+					}
 				}
-				if (currentProject.tasks.findByPath('intTest') instanceof Test) {
-					props['sonar.jacoco.reportPath'] = currentProject.tasks.intTest.jacoco.destFile
+			}
+		}
+
+		// look for a project with a sonar plugin applied
+		currentProject.allprojects {
+			project.plugins.withType(SonarPlugin) {
+				currentProject.sonar.project.withProjectProperties { props ->
+					configureTasks { name, value -> props[name] = value }
 				}
-				if (currentProject.tasks.findByPath('integTest') instanceof Test) {
-					props['sonar.jacoco.itReportPath'] = currentProject.tasks.integTest.jacoco.destFile
+			}
+
+			// once 1.4 support is cut off, I can use withType(SonarRunnerPlugin)
+			project.plugins.matching { it.class.name == 'org.gradle.api.sonar.runner.SonarRunnerPlugin'}.all {
+				currentProject.sonarRunner.sonarProperties {
+					configureTasks { name, value -> property name, value }
 				}
 			}
 		}
