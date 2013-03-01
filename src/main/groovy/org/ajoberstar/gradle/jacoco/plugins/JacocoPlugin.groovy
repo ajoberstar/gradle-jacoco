@@ -120,13 +120,11 @@ class JacocoPlugin implements Plugin<Project> {
 	 */
 	private void configureSonarPlugin(Project currentProject) {
 		def configureTasks = { propertySetter ->
-			currentProject.tasks.all { task ->
-				if (task instanceof Test) {
-					if (task.name in ['test']) {
-						propertySetter('sonar.jacoco.reportPath', task.jacoco.destFile)
-					} else if (task.name in ['intTest', 'integTest']) {
-						propertySetter('sonar.jacoco.itReportPath', task.jacoco.destFile)
-					}
+			currentProject.tasks.withType(Test) { task ->
+				if (task.name in ['test']) {
+					propertySetter('sonar.jacoco.reportPath', task.jacoco.destFile)
+				} else if (task.name in ['intTest', 'integTest']) {
+					propertySetter('sonar.jacoco.itReportPath', task.jacoco.destFile)
 				}
 			}
 		}
