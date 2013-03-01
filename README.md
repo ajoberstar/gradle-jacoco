@@ -15,7 +15,7 @@ Add the following lines to your build to use the gradle-jacoco plugin.
 ```groovy
 buildscript {
 	repositories { mavenCentral() }
-	dependencies { classpath 'org.ajoberstar:gradle-jacoco:0.1.0' }
+	dependencies { classpath 'org.ajoberstar:gradle-jacoco:0.2.0' }
 }
 
 apply plugin: 'jacoco'
@@ -29,7 +29,7 @@ as applying the Jacoco agent to tasks.
 
 By default, all `Test` tasks will have Jacoco support turned on.
 
-If you use the `sonar` plugin, the `jacoco` plugin will automatically
+If you use the `sonar` or `sonar-runner` plugins, the `jacoco` plugin will automatically
 set the unit test and integration test report paths for the project. It
 will assume that unit test data should come from the `test` task and that
 integration test data, if any, will come from an `intTest` or `integTest`
@@ -84,32 +84,40 @@ task.
 import org.ajoberstar.gradle.jacoco.tasks.*
 
 task mergedData(type: JacocoMerge) {
-	dependsOn test, integTest
-	executionData = files(test.jacoco.destFile, integTest.jacoco.destFile)
+	// can pass in any task set up for Jacoco
+	executionData test, integTest
 }
 ```
 
 ## Creating HTML Reports
 
-If you want an HTML report of your coverage, you can use the [JacocoReport](http://ajoberstar.org/gradle-jacoco/docs/groovydoc/org/ajoberstar/gradle/jacoco/tasks/JacocoReport.html)
-task.
+If you want an HTML report of your coverage, you can use the [JacocoReport](http://ajoberstar.org/gradle-jacoco/docs/groovydoc/org/ajoberstar/gradle/jacoco/tasks/JacocoReport.html) task. Report tasks will be created
+automatically for `test`, `intTest`, and `integTest` tasks, if any.
 
 ```groovy
 import org.ajoberstar.gradle.jacoco.tasks.*
 
 task jacocoReport(type: JacocoReport) {
 	// can include one or more execution files
-	executionData = files(test.jacoco.destFile, integTest.jacoco.destFile)
+	exectionData test, integTest
 
-	// must specify the classes that you want coverage data for
-	classFiles = sourceSets.main.output
+	// specify one or more source sets that you want to report on the coverage of
+	sourceSets project.sourceSets.main
 
-	// provide the source files that go along with those classes
-	sourceFiles = sourceSets.main.allSource
+	// can also specify additional class and source dirs
+	// additionalClassDirs moreStuff
+	// additionalSourceDirs moreSourceStuff
 }
 ```
 
 ## Release Notes
+
+**v0.2.0**
+
+- Improved the API of the `JacocoReport` and `JacocoMerge` tasks.
+- Added default `JacocoReport` tasks for any `test`, `intTest`, and `integTest` tasks to determine coverage of the `main` source set.
+- Support for the `sonar-runner` plugin coming in Gradle 1.5.
+- Licensed under Apache Software License.
 
 **v0.1.0**
 
