@@ -44,8 +44,8 @@ class JacocoPlugin implements Plugin<Project> {
 		configureDefaultDependencies(project, extension)
 		configureTaskClasspaths(project)
 		applyToDefaultTasks(project, extension)
-		addDefaultReportTasks(project)
-		configureSonarPlugin(project)
+		addDefaultReportTasks(project, extension)
+		configureSonarPlugin(project, extension)
 	}
 
 	/**
@@ -99,14 +99,17 @@ class JacocoPlugin implements Plugin<Project> {
 	/**
 	 * Adds report tasks for specific default test tasks.
 	 * @param project the project to add default tasks to
+	 * @param extension the extension describing the test task names
 	 */
-	private void addDefaultReportTasks(Project project) {
-		project.plugins.withType(JavaPlugin) {
-			project.tasks.withType(Test) { task ->
-				if (task.name in ['test', 'intTest', 'integTest']) {
-					JacocoReport reportTask = project.tasks.add("jacoco${task.name.capitalize()}Report", JacocoReport)
-					reportTask.executionData task
-					reportTask.sourceSets project.sourceSets.main
+	private void addDefaultReportTasks(Project project, JacocoPluginExtension extension) {
+		project.afterEvaluate {
+			project.plugins.withType(JavaPlugin) {
+				project.tasks.withType(Test) { task ->
+					if (task.name in [extension.unitTestTaskName, extension.integrationTestTaskName]) {
+						JacocoReport reportTask = project.tasks.add("jacoco${task.name.capitalize()}Report", JacocoReport)
+						reportTask.executionData task
+						reportTask.sourceSets project.sourceSets.main
+					}
 				}
 			}
 		}
@@ -118,13 +121,14 @@ class JacocoPlugin implements Plugin<Project> {
 	 * names exist. This is {@code test} for unit tests and either
 	 * {@code integTest} or {@code intTest} for integration tests.
 	 * @param currentProject the project to configure Sonar for
+	 * @param extension the extension describing the tes task names
 	 */
-	private void configureSonarPlugin(Project currentProject) {
+	private void configureSonarPlugin(Project currentProject, JacocoPluginExtension extension) {
 		def configureTasks = { propertySetter ->
 			currentProject.tasks.withType(Test) { task ->
-				if (task.name in ['test']) {
+				if (task.name == extension.unitTestTaskName) {
 					propertySetter('sonar.jacoco.reportPath', task.jacoco.destFile)
-				} else if (task.name in ['intTest', 'integTest']) {
+				} else if (task.name == extension.integrationTestTaskName) {
 					propertySetter('sonar.jacoco.itReportPath', task.jacoco.destFile)
 				}
 			}
@@ -133,15 +137,19 @@ class JacocoPlugin implements Plugin<Project> {
 		// look for a project with a sonar plugin applied
 		currentProject.allprojects {
 			project.plugins.withType(SonarPlugin) {
-				currentProject.sonar.project.withProjectProperties { props ->
-					configureTasks { name, value -> props[name] = value }
+				currentProject.afterEvaluate {
+					currentProject.sonar.project.withProjectProperties { props ->
+						configureTasks { name, value -> props[name] = value }
+					}
 				}
 			}
 
 			// once 1.4 support is cut off, I can use withType(SonarRunnerPlugin)
 			project.plugins.matching { it.class.name == 'org.gradle.api.sonar.runner.SonarRunnerPlugin'}.all {
-				currentProject.sonarRunner.sonarProperties {
-					configureTasks { name, value -> property name, value }
+				currentProject.afterEvaluate {
+					currentProject.sonarRunner.sonarProperties {
+						configureTasks { name, value -> property name, value }
+					}
 				}
 			}
 		}
