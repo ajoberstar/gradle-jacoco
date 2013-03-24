@@ -112,6 +112,12 @@ task jacocoReport(type: JacocoReport) {
 
 ## Release Notes
 
+**v0.3.0**
+
+- Fixed `JacocoReport` tasks to only run if all of their exection data input was created.
+- Fixed automatic Sonar configuration (See #8)
+- Added configuration option to specify the unit and integration task names used for configuration of Sonar and report tasks. (See #9)
+
 **v0.2.0**
 
 - Improved the API of the `JacocoReport` and `JacocoMerge` tasks.
