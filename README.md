@@ -99,7 +99,7 @@ import org.ajoberstar.gradle.jacoco.tasks.*
 
 task jacocoReport(type: JacocoReport) {
 	// can include one or more execution files
-	exectionData test, integTest
+	executionData test, integTest
 
 	// specify one or more source sets that you want to report on the coverage of
 	sourceSets project.sourceSets.main
@@ -114,7 +114,7 @@ task jacocoReport(type: JacocoReport) {
 
 **v0.3.0**
 
-- Fixed `JacocoReport` tasks to only run if all of their exection data input was created.
+- Fixed `JacocoReport` tasks to only run if all of their execution data input was created.
 - Fixed automatic Sonar configuration (See #8)
 - Added configuration option to specify the unit and integration task names used for configuration of Sonar and report tasks. (See #9)
 
