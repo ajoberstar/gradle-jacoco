@@ -1,5 +1,7 @@
 # gradle-jacoco
 
+[![Maintainer Status](http://stillmaintained.com/ajoberstar/gradle-jacoco.png)](http://stillmaintained.com/ajoberstar/gradle-jacoco)
+
 **NOTE: This plugin was integrated into Gradle in version 1.6 and this repo will no longer be maintained. See their
 [user guide](http://www.gradle.org/docs/current/userguide/jacoco_plugin.html) for more information on the new plugin.**
 
